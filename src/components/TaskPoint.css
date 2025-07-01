@@ -1,13 +1,17 @@
 .list {
-  display: flex;
-  justify-content: space-between;
-  width: 250px;
-  padding: 8px;
+  display: grid;
+  grid-template-columns: 300px 60px 60px;
+  align-items: center;
+  justify-content: flex-start;
+  column-gap: 10px;
+  padding: 10px ;
   background-color: white;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
   border-radius: 4px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
+
+
 
 button {
   padding: 6px 10px;
@@ -18,7 +22,7 @@ button {
 }
 
 button:hover {
-  opacity: 0.8;
+  opacity: 0.58;
 }
 
 .add-button {
