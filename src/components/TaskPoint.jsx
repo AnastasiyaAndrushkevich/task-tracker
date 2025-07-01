@@ -6,12 +6,24 @@ export default function TaskPoint() {
   const [tasks, setTasks] = useState(["Task 1", "Task 2", "Task 3"]);
   const [newTask, setNewTask] = useState("");
   const [showInput, setShowInput] = useState(false);
-  const [editIndex, setEditIndex] = useState(null); //какая азадача редактируется
+  const [editIndex, setEditIndex] = useState(null); //какая задача редактируется
   const [editedTask, setEditedTask] = useState(""); //ее новое значение
 
   const handleDelete = (indexToRemove) => {
     const updateTasks = tasks.filter((tasks, index) => index !== indexToRemove);
     setTasks(updateTasks);
+  };
+
+  const handleEdit = (index) => {
+    setEditIndex(index);
+    setEditedTask(tasks[index]);
+  };
+
+  const handleSaveEdit = (index) => {
+    const updatedTask = [...tasks]; //...оператор спред н расскалывает эл-ты массива, создает новый массив копию
+    updatedTask[index] = editedTask; //изменили эл-т в копии
+    setTasks(updatedTask); //обновили State
+    setEditIndex(null);
   };
 
   const handleAddTasks = () => {
@@ -25,8 +37,23 @@ export default function TaskPoint() {
       <ul>
         {tasks.map((item, index) => (
           <li className="list" key={index}>
-            <span>{item}</span>
-            <button onClick={() => handleDelete(index)}>Delete</button>
+            {editIndex === index ? (
+              <>
+                <input
+                  type="text"
+                  value={editedTask}
+                  onChange={(e) => setEditedTask(e.target.value)}
+                />
+                <button onClick={() => handleSaveEdit(index)}>Save</button>
+                <button onClick={() => setEditIndex(null)}>Canel</button>
+              </>
+            ) : (
+              <>
+                <span>{item}</span>
+                <button onClick={() => handleDelete(index)}>Delete</button>
+                <button onClick={() => handleEdit(index)}>Edit</button>
+              </>
+            )}
           </li> //"Возьми каждый item из list, и для каждого создай <li>{item}</li>"
         ))}
       </ul>
@@ -45,16 +72,3 @@ export default function TaskPoint() {
     </div>
   );
 }
-
-// export default function Card(props) {
-//   const [list, setList] = useState("milk");
-//   function handleClick() {
-//     setList("apple");
-//   }
-//   return (
-//     <>
-//       <p>{list}</p>
-//       <button onClick={handleClick}>push me</button>
-//     </>
-//   );
-// }
