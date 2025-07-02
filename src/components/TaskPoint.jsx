@@ -1,11 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./TaskPoint.css";
 import Button from "./Button";
 
 export default function TaskPoint() {
-  const [tasks, setTasks] = useState(["Task 1", "Task 2", "Task 3"]);
+  const [tasks, setTasks] = useState(() => {
+    const saved = localStorage.getItem("myTasks"); //достать из браузера (localStorage) значение под именем майТаскс и сохранить это в переменную saved
+    return saved ? JSON.parse(saved) : []; //иф saved  есть превращаем в массив JSON.parse, иф пустой массив
+  });
+  useEffect(() => {
+    localStorage.setItem("myTasks", JSON.stringify(tasks)); //сохраняет в браузер localStorage.setItem(), превращает массив в строку JSON.stringify(tasks)
+  }, [tasks]);
+
   const [newTask, setNewTask] = useState("");
-  const [showInput, setShowInput] = useState(false);
   const [editIndex, setEditIndex] = useState(null); //какая задача редактируется
   const [editedTask, setEditedTask] = useState(""); //ее новое значение
 
