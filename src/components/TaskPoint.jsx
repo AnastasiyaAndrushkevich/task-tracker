@@ -22,20 +22,26 @@ export default function TaskPoint() {
 
   const handleEdit = (index) => {
     setEditIndex(index);
-    setEditedTask(tasks[index]);
+    setEditedTask(tasks[index].text);
   };
 
   const handleSaveEdit = (index) => {
-    const updatedTask = [...tasks]; //...оператор спред н расскалывает эл-ты массива, создает новый массив копию
-    updatedTask[index] = editedTask; //изменили эл-т в копии
+    const updatedTask = [...tasks]; //...оператор спред расскалывает эл-ты массива, создает новый массив копию
+    updatedTask[index] = { ...editedTask[index], text: editedTask }; //изменили эл-т в копии
     setTasks(updatedTask); //обновили State
     setEditIndex(null);
   };
 
   const handleAddTasks = () => {
     if (newTask.trim() === "") return;
-    setTasks([...tasks, newTask]);
+    setTasks([...tasks, { text: newTask, done: false }]);
     setNewTask("");
+  };
+
+  const toggleDone = (indexToToggle) => {
+    const updated = [...tasks]; //копия массива
+    updated[indexToToggle].done = !updated[indexToToggle].done; //переключаем true/false
+    setTasks(updated);
   };
 
   return (
@@ -55,7 +61,12 @@ export default function TaskPoint() {
               </>
             ) : (
               <>
-                <span>{item}</span>
+                <input
+                  type="checkbox"
+                  checked={item.done}
+                  onChange={() => toggleDone(index)}
+                />
+                <span>{item.text}</span>
                 <button onClick={() => handleDelete(index)}>Delete</button>
                 <button onClick={() => handleEdit(index)}>Edit</button>
               </>
@@ -63,11 +74,7 @@ export default function TaskPoint() {
           </li> //"Возьми каждый item из list, и для каждого создай <li>{item}</li>"
         ))}
       </ul>
-      <ul>
-        {/* {!showInput && (
-          <button onClick={() => setShowInput(true)}>Add task</button>
-        )} */}
-      </ul>
+
       <input
         type="text"
         value={newTask}
