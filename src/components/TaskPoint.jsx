@@ -14,6 +14,9 @@ export default function TaskPoint() {
   const [newTask, setNewTask] = useState("");
   const [editIndex, setEditIndex] = useState(null); //какая задача редактируется
   const [editedTask, setEditedTask] = useState(""); //ее новое значение
+  const [filter, setFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
   const handleDelete = (indexToRemove) => {
     const updateTasks = tasks.filter((tasks, index) => index !== indexToRemove);
@@ -27,7 +30,7 @@ export default function TaskPoint() {
 
   const handleSaveEdit = (index) => {
     const updatedTask = [...tasks]; //...оператор спред расскалывает эл-ты массива, создает новый массив копию
-    updatedTask[index] = { ...editedTask[index], text: editedTask }; //изменили эл-т в копии
+    updatedTask[index] = { ...updatedTask[index], text: editedTask }; //изменили эл-т в копии
     setTasks(updatedTask); //обновили State
     setEditIndex(null);
   };
@@ -44,10 +47,44 @@ export default function TaskPoint() {
     setTasks(updated);
   };
 
+  const filteredTasks = tasks
+    .filter((task) => {
+      if (filter === "done") return task.done;
+      if (filter === "active") return !task.done;
+      return true;
+    })
+    .filter((task) =>
+      task.text.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+    );
+
+  const handlDeleteCompleted = () => {
+    const remaining = tasks.filter((tasks) => !tasks.done);
+    setTasks(remaining);
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   return (
     <div className="app-container">
+      <div className="filters">
+        <button onClick={() => setFilter("all")}>All</button>
+        <button onClick={() => setFilter("active")}>Active</button>
+        <button onClick={() => setFilter("done")}>Done</button>
+        <button onClick={handlDeleteCompleted}>Delete comleted</button>
+        <input
+          type="text"
+          placeholder="Search task"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
       <ul>
-        {tasks.map((item, index) => (
+        {filteredTasks.map((item, index) => (
           <li className="list" key={index}>
             {editIndex === index ? (
               <>
@@ -71,7 +108,7 @@ export default function TaskPoint() {
                 <button onClick={() => handleEdit(index)}>Edit</button>
               </>
             )}
-          </li> //"Возьми каждый item из list, и для каждого создай <li>{item}</li>"
+          </li>
         ))}
       </ul>
 
