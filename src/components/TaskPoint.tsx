@@ -1,34 +1,37 @@
 import { useEffect, useState } from "react";
 import "./TaskPoint.css";
 import Button from "./Button";
+import { TaskType } from "../types";
 
 export default function TaskPoint() {
-  const [tasks, setTasks] = useState(() => {
+  const [tasks, setTasks] = useState<TaskType[]>(() => {
     const saved = localStorage.getItem("myTasks"); //достать из браузера (localStorage) значение под именем майТаскс и сохранить это в переменную saved
-    return saved ? JSON.parse(saved) : []; //иф saved  есть превращаем в массив JSON.parse, иф пустой массив
+    return saved ? (JSON.parse(saved) as TaskType[]) : []; //иф saved  есть превращаем в массив JSON.parse, иф пустой массив
   });
   useEffect(() => {
     localStorage.setItem("myTasks", JSON.stringify(tasks)); //сохраняет в браузер localStorage.setItem(), превращает массив в строку JSON.stringify(tasks)
   }, [tasks]);
 
-  const [newTask, setNewTask] = useState("");
-  const [editIndex, setEditIndex] = useState(null); //какая задача редактируется
-  const [editedTask, setEditedTask] = useState(""); //ее новое значение
-  const [filter, setFilter] = useState("all");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [newTask, setNewTask] = useState<string>("");
+  const [editIndex, setEditIndex] = useState<number | null>(null); //какая задача редактируется
+  const [editedTask, setEditedTask] = useState<string>(""); //ее новое значение
+  const [filter, setFilter] = useState<"all" | "active" | "done">("all");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>("");
 
-  const handleDelete = (indexToRemove) => {
-    const updateTasks = tasks.filter((tasks, index) => index !== indexToRemove);
+  const handleDelete = (indexToRemove: number) => {
+    const updateTasks = tasks.filter(
+      (tasks, index: number) => index !== indexToRemove
+    );
     setTasks(updateTasks);
   };
 
-  const handleEdit = (index) => {
+  const handleEdit = (index: number) => {
     setEditIndex(index);
     setEditedTask(tasks[index].text);
   };
 
-  const handleSaveEdit = (index) => {
+  const handleSaveEdit = (index: number) => {
     const updatedTask = [...tasks]; //...оператор спред расскалывает эл-ты массива, создает новый массив копию
     updatedTask[index] = { ...updatedTask[index], text: editedTask }; //изменили эл-т в копии
     setTasks(updatedTask); //обновили State
@@ -41,7 +44,7 @@ export default function TaskPoint() {
     setNewTask("");
   };
 
-  const toggleDone = (indexToToggle) => {
+  const toggleDone = (indexToToggle: number) => {
     const updated = [...tasks]; //копия массива
     updated[indexToToggle].done = !updated[indexToToggle].done; //переключаем true/false
     setTasks(updated);
@@ -57,8 +60,8 @@ export default function TaskPoint() {
       task.text.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
     );
 
-  const handlDeleteCompleted = () => {
-    const remaining = tasks.filter((tasks) => !tasks.done);
+  const handleDeleteCompleted = () => {
+    const remaining = tasks.filter((tasks: TaskType) => !tasks.done);
     setTasks(remaining);
   };
 
@@ -75,7 +78,7 @@ export default function TaskPoint() {
         <button onClick={() => setFilter("all")}>All</button>
         <button onClick={() => setFilter("active")}>Active</button>
         <button onClick={() => setFilter("done")}>Done</button>
-        <button onClick={handlDeleteCompleted}>Delete comleted</button>
+        <button onClick={handleDeleteCompleted}>Delete comleted</button>
         <input
           type="text"
           placeholder="Search task"
@@ -84,7 +87,7 @@ export default function TaskPoint() {
         />
       </div>
       <ul>
-        {filteredTasks.map((item, index) => (
+        {filteredTasks.map((item, index: number) => (
           <li className="list" key={index}>
             {editIndex === index ? (
               <>
