@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./TaskPoint.css";
-import Button from "./Button";
 import { TaskType } from "../types";
+import AddTaskForm from "./AddTaskForm";
 
 export default function TaskPoint() {
   const [tasks, setTasks] = useState<TaskType[]>(() => {
@@ -12,7 +12,6 @@ export default function TaskPoint() {
     localStorage.setItem("myTasks", JSON.stringify(tasks)); //сохраняет в браузер localStorage.setItem(), превращает массив в строку JSON.stringify(tasks)
   }, [tasks]);
 
-  const [newTask, setNewTask] = useState<string>("");
   const [editIndex, setEditIndex] = useState<number | null>(null); //какая задача редактируется
   const [editedTask, setEditedTask] = useState<string>(""); //ее новое значение
   const [filter, setFilter] = useState<"all" | "active" | "done">("all");
@@ -36,12 +35,6 @@ export default function TaskPoint() {
     updatedTask[index] = { ...updatedTask[index], text: editedTask }; //изменили эл-т в копии
     setTasks(updatedTask); //обновили State
     setEditIndex(null);
-  };
-
-  const handleAddTasks = () => {
-    if (newTask.trim() === "") return;
-    setTasks([...tasks, { text: newTask, done: false }]);
-    setNewTask("");
   };
 
   const toggleDone = (indexToToggle: number) => {
@@ -114,14 +107,7 @@ export default function TaskPoint() {
           </li>
         ))}
       </ul>
-
-      <input
-        type="text"
-        value={newTask}
-        onChange={(e) => setNewTask(e.target.value)}
-        placeholder="Enter the task"
-      />
-      <Button onClick={handleAddTasks} />
+      <AddTaskForm tasks={tasks} setTasks={setTasks} />
     </div>
   );
 }
