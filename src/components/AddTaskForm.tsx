@@ -1,19 +1,23 @@
-import { useEffect, useState } from "react";
-import TaskPoint from "./TaskPoint";
+import React from "react";
+
+import { useState } from "react";
 import { TaskType } from "../types";
 import Button from "./Button";
+import { addTask } from "../store/tasksSlice";
+import { useDispatch } from "react-redux";
 
-type AddTaskFormProps = {
-  tasks: TaskType[];
-  setTasks: React.Dispatch<React.SetStateAction<TaskType[]>>;
-};
+// type AddTaskFormProps = {
+//   tasks: TaskType[];
+//   setTasks: React.Dispatch<React.SetStateAction<TaskType[]>>;
+// };
 
-export default function AddTaskForm({ tasks, setTasks }: AddTaskFormProps) {
-  const [newTask, setNewTask] = useState<string>("");
+export default function AddTaskForm() {
+  const [newTask, setNewTask] = useState("");
+  const dispatch = useDispatch();
 
   const handleAddTasks = () => {
     if (newTask.trim() === "") return;
-    setTasks([...tasks, { text: newTask, done: false }]);
+    dispatch(addTask(newTask));
     setNewTask("");
   };
   return (

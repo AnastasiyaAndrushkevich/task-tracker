@@ -37,7 +37,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
             onChange={(e) => onChangeEditedText(e.target.value)}
           />
           <Button onClick={onSave}>Save</Button>
-          <Button onClick={onCancel}>Canel</Button>
+          <Button onClick={onCancel}>Cancel</Button>
         </>
       ) : (
         <>
