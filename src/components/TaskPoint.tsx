@@ -1,8 +1,75 @@
 import { useEffect, useState } from "react";
 import "./TaskPoint.css";
-import Button from "./Button";
 import { TaskType } from "../types";
 
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../store/store";
+import {
+  toggleDone,
+  deleteTask,
+  startEdit,
+  cancelEdit,
+  changeEditedText,
+  saveEdit,
+  deleteCompleted,
+  setFilter,
+  setSearchTerm,
+} from "../store/tasksSlice";
+import TaskItem from "./TaskItem";
+import TaskFilter from "./TaskFilter";
+import AddTaskForm from "./AddTaskForm";
+
+export default function TaskPoint() {
+  const dispatch = useDispatch();
+  const { tasks, editIndex, editedText, filter, searchTerm } = useSelector(
+    (state: RootState) => state.tasks
+  );
+  const filteredTasks = tasks
+    .filter((task) => {
+      if (filter === "done") return task.done;
+      if (filter === "active") return !task.done;
+      return true;
+    })
+    .filter((task) =>
+      task.text.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  useEffect(() => {
+    localStorage.setItem("myTasks", JSON.stringify(tasks));
+  }, [tasks]);
+
+  return (
+    <div className="app-container">
+      <TaskFilter
+        filter={filter}
+        setFilter={(value) => dispatch(setFilter(value))}
+        searchTerm={searchTerm}
+        setSearchTerm={(term) => dispatch(setSearchTerm(term))}
+        onDeleteCompleted={() => dispatch(deleteCompleted())}
+      />
+
+      <ul>
+        {filteredTasks.map((item, index) => (
+          <TaskItem
+            key={index}
+            task={item}
+            index={index}
+            isEditing={editIndex === index}
+            editedText={editedText}
+            onChangeEditedText={(text) => dispatch(changeEditedText(text))}
+            onToggleDone={() => dispatch(toggleDone(index))}
+            onDelete={() => dispatch(deleteTask(index))}
+            onEdit={() => dispatch(startEdit(index))}
+            onSave={() => dispatch(saveEdit(index))}
+            onCancel={() => dispatch(cancelEdit())}
+          />
+        ))}
+      </ul>
+      {/* <AddTaskForm /> */}
+    </div>
+  );
+}
+
+/*
 export default function TaskPoint() {
   const [tasks, setTasks] = useState<TaskType[]>(() => {
     const saved = localStorage.getItem("myTasks"); //достать из браузера (localStorage) значение под именем майТаскс и сохранить это в переменную saved
@@ -12,19 +79,8 @@ export default function TaskPoint() {
     localStorage.setItem("myTasks", JSON.stringify(tasks)); //сохраняет в браузер localStorage.setItem(), превращает массив в строку JSON.stringify(tasks)
   }, [tasks]);
 
-  const [newTask, setNewTask] = useState<string>("");
   const [editIndex, setEditIndex] = useState<number | null>(null); //какая задача редактируется
   const [editedTask, setEditedTask] = useState<string>(""); //ее новое значение
-  const [filter, setFilter] = useState<"all" | "active" | "done">("all");
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>("");
-
-  const handleDelete = (indexToRemove: number) => {
-    const updateTasks = tasks.filter(
-      (tasks, index: number) => index !== indexToRemove
-    );
-    setTasks(updateTasks);
-  };
 
   const handleEdit = (index: number) => {
     setEditIndex(index);
@@ -38,18 +94,23 @@ export default function TaskPoint() {
     setEditIndex(null);
   };
 
-  const handleAddTasks = () => {
-    if (newTask.trim() === "") return;
-    setTasks([...tasks, { text: newTask, done: false }]);
-    setNewTask("");
-  };
-
   const toggleDone = (indexToToggle: number) => {
     const updated = [...tasks]; //копия массива
     updated[indexToToggle].done = !updated[indexToToggle].done; //переключаем true/false
     setTasks(updated);
   };
 
+  const handleDelete = (index: number) => {
+    const updatedTasks = tasks.filter((_, i) => i !== index);
+    setTasks(updatedTasks);
+  };
+
+  const handleDeleteCompleted = () => {
+    const remaining = tasks.filter((tasks: TaskType) => !tasks.done);
+    setTasks(remaining);
+  };
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [filter, setFilter] = useState<"all" | "active" | "done">("all");
   const filteredTasks = tasks
     .filter((task) => {
       if (filter === "done") return task.done;
@@ -57,71 +118,38 @@ export default function TaskPoint() {
       return true;
     })
     .filter((task) =>
-      task.text.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+      task.text.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
-  const handleDeleteCompleted = () => {
-    const remaining = tasks.filter((tasks: TaskType) => !tasks.done);
-    setTasks(remaining);
-  };
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
 
   return (
     <div className="app-container">
-      <div className="filters">
-        <button onClick={() => setFilter("all")}>All</button>
-        <button onClick={() => setFilter("active")}>Active</button>
-        <button onClick={() => setFilter("done")}>Done</button>
-        <button onClick={handleDeleteCompleted}>Delete comleted</button>
-        <input
-          type="text"
-          placeholder="Search task"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
+      <TaskFilter
+        filter={filter}
+        setFilter={setFilter}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        onDeleteCompleted={handleDeleteCompleted}
+      />
+      <div className="filters"></div>
       <ul>
         {filteredTasks.map((item, index: number) => (
-          <li className="list" key={index}>
-            {editIndex === index ? (
-              <>
-                <input
-                  type="text"
-                  value={editedTask}
-                  onChange={(e) => setEditedTask(e.target.value)}
-                />
-                <button onClick={() => handleSaveEdit(index)}>Save</button>
-                <button onClick={() => setEditIndex(null)}>Canel</button>
-              </>
-            ) : (
-              <>
-                <input
-                  type="checkbox"
-                  checked={item.done}
-                  onChange={() => toggleDone(index)}
-                />
-                <span>{item.text}</span>
-                <button onClick={() => handleDelete(index)}>Delete</button>
-                <button onClick={() => handleEdit(index)}>Edit</button>
-              </>
-            )}
-          </li>
+          <TaskItem
+            key={index}
+            task={item}
+            index={index}
+            isEditing={editIndex === index}
+            editedText={editedTask}
+            onChangeEditedText={setEditedTask}
+            onToggleDone={() => toggleDone(index)}
+            onDelete={() => handleDelete(index)}
+            onEdit={() => handleEdit(index)}
+            onSave={() => handleSaveEdit(index)}
+            onCancel={() => setEditIndex(index)}
+          />
         ))}
       </ul>
-
-      <input
-        type="text"
-        value={newTask}
-        onChange={(e) => setNewTask(e.target.value)}
-        placeholder="Enter the task"
-      />
-      <Button onClick={handleAddTasks} />
+      <AddTaskForm tasks={tasks} setTasks={setTasks} />
     </div>
   );
 }
+*/
