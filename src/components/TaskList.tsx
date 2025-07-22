@@ -1,47 +1,49 @@
-import { TaskType } from "../types";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../store/store";
+import {
+  toggleDone,
+  deleteTask,
+  startEdit,
+  saveEdit,
+  cancelEdit,
+  changeEditedText,
+} from "../store/tasksSlice";
 import TaskItem from "./TaskItem";
+const TaskList = () => {
+  const dispatch = useDispatch();
+  const { tasks, editIndex, editedText, filter, searchTerm } = useSelector(
+    (state: RootState) => state.tasks
+  );
 
-type TaskListProps = {
-  tasks: TaskType[];
-  onToggleDone: (index: number) => void;
-  onDelete: (index: number) => void;
-  onEdit: (index: number) => void;
-  editIndex: number | null;
-  editedTask: string;
-  setEditedTask: (value: string) => void;
-  onSaveEdit: (index: number) => void;
-  onCancelEdit: () => void;
-};
+  const filteredTasks = tasks
+    .filter((task) => {
+      if (filter === "done") return task.done;
+      if (filter === "active") return !task.done;
+      return true;
+    })
+    .filter((task) =>
+      task.text.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
-const TaskList: React.FC<TaskListProps> = ({
-  tasks,
-  onToggleDone,
-  onDelete,
-  onEdit,
-  editIndex,
-  editedTask,
-  setEditedTask,
-  onSaveEdit,
-  onCancelEdit,
-}) => {
   return (
     <>
-      {tasks.map((task, index) => (
+      {filteredTasks.map((task, index) => (
         <TaskItem
           key={index}
           task={task}
           index={index}
           isEditing={editIndex === index}
-          editedText={editedTask}
-          onChangeEditedText={setEditedTask}
-          onToggleDone={() => onToggleDone(index)}
-          onDelete={() => onDelete(index)}
-          onEdit={() => onEdit(index)}
-          onSave={() => onSaveEdit(index)}
-          onCancel={onCancelEdit}
+          editedText={editedText}
+          onChangeEditedText={(text) => dispatch(changeEditedText(text))}
+          onToggleDone={() => dispatch(toggleDone(index))}
+          onDelete={() => dispatch(deleteTask(index))}
+          onEdit={() => dispatch(startEdit(index))}
+          onSave={() => dispatch(saveEdit(index))}
+          onCancel={() => dispatch(cancelEdit())}
         />
       ))}
     </>
   );
 };
+
 export default TaskList;
