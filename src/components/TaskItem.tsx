@@ -15,7 +15,7 @@ type TaskItemProps = {
   onCancel: () => void;
 };
 
-const TaskItem: React.FC<TaskItemProps> = ({
+const TaskItem = ({
   task,
   index,
   isEditing,
@@ -26,9 +26,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
   onEdit,
   onSave,
   onCancel,
-}) => {
+}: TaskItemProps) => {
   return (
-    <li className="list" key={index}>
+    <li className="list">
       {isEditing ? (
         <>
           <input
@@ -37,7 +37,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
             onChange={(e) => onChangeEditedText(e.target.value)}
           />
           <Button onClick={onSave}>Save</Button>
-          <Button onClick={onCancel}>Canel</Button>
+          <Button onClick={onCancel}>Cancel</Button>
         </>
       ) : (
         <>

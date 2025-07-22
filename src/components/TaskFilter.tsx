@@ -1,45 +1,40 @@
-import { useEffect, useState } from "react";
-import Button from "./Button";
-import { TaskType } from "../types";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import { setFilter, setSearchTerm, deleteCompleted } from "../store/tasksSlice";
 
-type TaskFilterProps = {
-  filter: "all" | "active" | "done";
-  setFilter: (filter: "all" | "active" | "done") => void;
-  searchTerm: string;
-  setSearchTerm: (term: string) => void;
-  onDeleteCompleted: () => void;
-};
-
-const TaskFilter: React.FC<TaskFilterProps> = ({
-  filter,
-  setFilter,
-  searchTerm,
-  setSearchTerm,
-  onDeleteCompleted,
-}) => {
-  const [localSearch, setLocalSearch] = useState(searchTerm);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setSearchTerm(localSearch);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [localSearch, setSearchTerm]);
+export default function TaskFilter() {
+  const dispatch = useDispatch();
+  const { filter, searchTerm } = useSelector((state: RootState) => state.tasks);
 
   return (
-    <div className="filters">
-      <Button onClick={() => setFilter("all")}>All</Button>
-      <Button onClick={() => setFilter("active")}>Active</Button>
-      <Button onClick={() => setFilter("done")}>Done</Button>
-      <Button onClick={onDeleteCompleted}>Delete completed</Button>
+    <div>
       <input
         type="text"
-        placeholder="Search task"
-        value={localSearch}
-        onChange={(e) => setLocalSearch(e.target.value)}
+        placeholder="Search..."
+        value={searchTerm}
+        onChange={(e) => dispatch(setSearchTerm(e.target.value))}
       />
+      <button
+        onClick={() => dispatch(setFilter("all"))}
+        disabled={filter === "all"}
+      >
+        All
+      </button>
+      <button
+        onClick={() => dispatch(setFilter("active"))}
+        disabled={filter === "active"}
+      >
+        Active
+      </button>
+      <button
+        onClick={() => dispatch(setFilter("done"))}
+        disabled={filter === "done"}
+      >
+        Done
+      </button>
+      <button onClick={() => dispatch(deleteCompleted())}>
+        delete Completed
+      </button>
     </div>
   );
-};
-
-export default TaskFilter;
+}
