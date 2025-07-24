@@ -13,13 +13,25 @@ type TasksState = {
   searchTerm: string;
 };
 
+function getSafeLocalStorageItem<T>(key: string, fallback: T): T {
+  try {
+    const value = localStorage.getItem(key);
+    if (!value || value === "undefined") return fallback;
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+}
+
 const initialState: TasksState = {
-  tasks: [],
+  tasks: getSafeLocalStorageItem<TaskType[]>("myTasks", []),
+  filter:
+    (localStorage.getItem("filter") as "all" | "active" | "done") || "all",
+  searchTerm: localStorage.getItem("searchTerm") || "",
   editIndex: null,
   editedText: "",
-  filter: "all",
-  searchTerm: "",
 };
+
 
 const tasksSlice = createSlice({
   name: "tasks",
@@ -63,6 +75,7 @@ const tasksSlice = createSlice({
     },
   },
 });
+
 
 export const {
   addTask,

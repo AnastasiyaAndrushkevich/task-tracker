@@ -21,11 +21,21 @@ import {
 
 export default function TaskPoint() {
   const dispatch = useDispatch();
-  const tasks = useSelector((state: RootState) => state.tasks.tasks);
+  const { tasks, filter, searchTerm } = useSelector(
+    (state: RootState) => state.tasks
+  );
 
   useEffect(() => {
     localStorage.setItem("myTasks", JSON.stringify(tasks));
   }, [tasks]);
+
+  useEffect(() => {
+    localStorage.setItem("filter", filter);
+  }, [filter]);
+
+  useEffect(() => {
+    localStorage.setItem("searchTerm", searchTerm);
+  }, [searchTerm]);
 
   return (
     <div className="app-container">
