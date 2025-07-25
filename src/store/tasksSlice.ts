@@ -11,6 +11,7 @@ type TasksState = {
   editedText: string;
   filter: "all" | "active" | "done";
   searchTerm: string;
+  sortBy: 'default' | 'unfinishedFirst' | 'newestFirst';
 };
 
 function getSafeLocalStorageItem<T>(key: string, fallback: T): T {
@@ -23,6 +24,7 @@ function getSafeLocalStorageItem<T>(key: string, fallback: T): T {
   }
 }
 
+
 const initialState: TasksState = {
   tasks: getSafeLocalStorageItem<TaskType[]>("myTasks", []),
   filter:
@@ -30,6 +32,7 @@ const initialState: TasksState = {
   searchTerm: localStorage.getItem("searchTerm") || "",
   editIndex: null,
   editedText: "",
+sortBy: 'default',
 };
 
 
@@ -73,6 +76,10 @@ const tasksSlice = createSlice({
     setSearchTerm(state, action: PayloadAction<string>) {
       state.searchTerm = action.payload;
     },
+     setSortBy(state, action: PayloadAction<'default' | 'unfinishedFirst' | 'newestFirst'>) {
+      state.sortBy = action.payload;
+    },
+
   },
 });
 
@@ -88,6 +95,7 @@ export const {
   deleteCompleted,
   setFilter,
   setSearchTerm,
+  setSortBy,
 } = tasksSlice.actions;
 
 export default tasksSlice.reducer;
