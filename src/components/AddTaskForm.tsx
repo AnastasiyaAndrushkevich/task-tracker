@@ -12,13 +12,20 @@ export default function AddTaskForm() {
     dispatch(addTask(newTask));
     setNewTask("");
   };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleAddTasks();
+    }
+  };
   return (
     <div>
       <input
         type="text"
         value={newTask}
         onChange={(e) => setNewTask(e.target.value)}
-        placeholder="Enter the task"
+        onKeyDown={handleKeyDown}
+        placeholder="Enter a new task"
       />
       <Button onClick={handleAddTasks}>Add new task</Button>
     </div>
