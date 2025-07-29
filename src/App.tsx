@@ -1,10 +1,10 @@
 import "./App.css";
-import Header from "./components/Header";
-import TaskPoint from "./components/TaskPoint";
+import Header from "./components/Header/Header";
+import TaskPoint from "./components/TaskPoint/TaskPoint";
 
 function App() {
   return (
-    <div>
+    <div className="app-container">
       <Header />
       <TaskPoint />
     </div>

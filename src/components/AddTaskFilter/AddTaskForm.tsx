@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Button from "./Button";
+import Button from "../Button/Button";
 import { useDispatch } from "react-redux";
-import { addTask } from "../store/tasksSlice";
+import { addTask } from "../../store/tasksSlice";
 
 export default function AddTaskForm() {
   const [newTask, setNewTask] = useState("");

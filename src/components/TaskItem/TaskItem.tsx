@@ -1,6 +1,7 @@
 import React from "react";
-import { TaskType } from "../types";
-import Button from "./Button";
+import { TaskType } from "../../types";
+import Button from "../Button/Button";
+import "./TaskItem.css";
 
 type TaskItemProps = {
   task: TaskType;
@@ -30,7 +31,7 @@ const TaskItem = ({
   return (
     <li className="list">
       {isEditing ? (
-        <>
+        <div className="task-row">
           <input
             type="text"
             value={editedText}
@@ -38,14 +39,14 @@ const TaskItem = ({
           />
           <Button onClick={onSave}>Save</Button>
           <Button onClick={onCancel}>Cancel</Button>
-        </>
+        </div>
       ) : (
-        <>
+        <div className="task-row">
           <input type="checkbox" checked={task.done} onChange={onToggleDone} />
           <span>{task.text}</span>
           <Button onClick={onDelete}>Delete</Button>
           <Button onClick={onEdit}>Edit</Button>
-        </>
+        </div>
       )}
     </li>
   );

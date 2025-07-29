@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../store/store";
+import { RootState } from "../../store/store";
 import {
   toggleDone,
   deleteTask,
@@ -7,8 +7,10 @@ import {
   saveEdit,
   cancelEdit,
   changeEditedText,
-} from "../store/tasksSlice";
-import TaskItem from "./TaskItem";
+} from "../../store/tasksSlice";
+import TaskItem from "../TaskItem/TaskItem";
+import { TaskType } from "../../types";
+
 const TaskList = () => {
   const dispatch = useDispatch();
   const { tasks, editIndex, editedText, filter, searchTerm } = useSelector(

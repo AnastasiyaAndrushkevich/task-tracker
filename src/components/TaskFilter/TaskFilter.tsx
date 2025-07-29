@@ -1,6 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../store/store";
-import { setFilter, setSearchTerm, deleteCompleted } from "../store/tasksSlice";
+import { RootState } from "../../store/store";
+import {
+  setFilter,
+  setSearchTerm,
+  deleteCompleted,
+} from "../../store/tasksSlice";
 
 export default function TaskFilter() {
   const dispatch = useDispatch();
@@ -8,12 +12,6 @@ export default function TaskFilter() {
 
   return (
     <div>
-      <input
-        type="text"
-        placeholder="Search..."
-        value={searchTerm}
-        onChange={(e) => dispatch(setSearchTerm(e.target.value))}
-      />
       <button
         onClick={() => dispatch(setFilter("all"))}
         disabled={filter === "all"}
@@ -35,6 +33,13 @@ export default function TaskFilter() {
       <button onClick={() => dispatch(deleteCompleted())}>
         delete Completed
       </button>
+
+      <input
+        type="text"
+        placeholder="Search..."
+        value={searchTerm}
+        onChange={(e) => dispatch(setSearchTerm(e.target.value))}
+      />
     </div>
   );
 }
