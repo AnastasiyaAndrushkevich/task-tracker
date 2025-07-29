@@ -1,27 +1,14 @@
 import { useEffect } from "react";
 import "./TaskPoint.css";
 import TaskList from "./TaskList";
-import TaskItem from "./TaskItem";
 import TaskFilter from "./TaskFilter";
 import AddTaskForm from "./AddTaskForm";
-
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../store/store";
-import {
-  toggleDone,
-  deleteTask,
-  startEdit,
-  cancelEdit,
-  changeEditedText,
-  saveEdit,
-  deleteCompleted,
-  setFilter,
-  setSearchTerm,
-} from "../store/tasksSlice";
 
 export default function TaskPoint() {
   const dispatch = useDispatch();
-  const { tasks, filter, searchTerm } = useSelector(
+  const { tasks, filter, searchTerm, sortBy } = useSelector(
     (state: RootState) => state.tasks
   );
 
@@ -37,10 +24,29 @@ export default function TaskPoint() {
     localStorage.setItem("searchTerm", searchTerm);
   }, [searchTerm]);
 
+  const filteredTasks = tasks
+    .filter((task) => {
+      if (filter === "done") return task.done;
+      if (filter === "active") return !task.done;
+      return true;
+    })
+    .filter((task) =>
+      task.text.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (sortBy === "unfinishedFirst") {
+        return Number(a.done) - Number(b.done);
+      }
+      if (sortBy === "newestFirst") {
+        return 0;
+      }
+      return 0;
+    });
+
   return (
     <div className="app-container">
       <TaskFilter />
-      <TaskList />
+      <TaskList tasks={filteredTasks} />
       <AddTaskForm />
     </div>
   );

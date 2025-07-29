@@ -25,7 +25,8 @@ export default function AddTaskForm() {
         value={newTask}
         onChange={(e) => setNewTask(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="Enter a new task"
+        placeholder="Add a new task"
+        autoFocus
       />
       <Button onClick={handleAddTasks}>Add new task</Button>
     </div>
