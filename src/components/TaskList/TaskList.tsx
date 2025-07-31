@@ -9,27 +9,26 @@ import {
   changeEditedText,
 } from "../../store/tasksSlice";
 import TaskItem from "../TaskItem/TaskItem";
-import { TaskType } from "../../types";
 
 const TaskList = () => {
   const dispatch = useDispatch();
-  const { tasks, editIndex, editedText, filter, searchTerm } = useSelector(
+  const { tasks, editIndex, editedText } = useSelector(
     (state: RootState) => state.tasks
   );
 
-  const filteredTasks = tasks
-    .filter((task) => {
-      if (filter === "done") return task.done;
-      if (filter === "active") return !task.done;
-      return true;
-    })
-    .filter((task) =>
-      task.text.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  // const filteredTasks = tasks
+  //   .filter((task) => {
+  //     if (filter === "done") return task.done;
+  //     if (filter === "active") return !task.done;
+  //     return true;
+  //   })
+  //   .filter((task) =>
+  //     task.text.toLowerCase().includes(searchTerm.toLowerCase())
+  //   );
 
   return (
     <>
-      {filteredTasks.map((task, index) => (
+      {tasks.map((task, index) => (
         <TaskItem
           key={index}
           task={task}
